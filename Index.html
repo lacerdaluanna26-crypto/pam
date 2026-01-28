@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Pedrômetro</title>
+
+<style>
+:root {
+    --preto: #000;
+}
+
+/* FUNDO */
+body {
+    margin: 0;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at top, #6b452f, #2c1d13 60%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    overflow: hidden;
+}
+
+/* TÍTULO */
+h1 {
+    position: absolute;
+    top: 20px;
+    font-size: 44px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
+
+/* PÉ BOTÃO */
+.pe-botao {
+    font-size: 210px;
+    cursor: pointer;
+    animation: flutuar 2.5s infinite ease-in-out, brilho 2s infinite;
+    user-select: none;
+    position: relative;
+    z-index: 2;
+}
+
+.pe-botao.clicado {
+    animation: pulse 0.4s, shake 0.4s;
+}
+
+/* EMOJIS DE PÉ */
+.pe-emoji {
+    position: fixed;
+    bottom: -40px;
+    animation: subir linear forwards;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes subir {
+    from {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-110vh) scale(1.4);
+        opacity: 0;
+    }
+}
+
+/* ANIMAÇÕES */
+@keyframes flutuar {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-18px); }
+}
+
+@keyframes brilho {
+    0%,100% { filter: drop-shadow(0 0 10px rgba(0,0,0,0.4)); }
+    50% { filter: drop-shadow(0 0 25px rgba(0,0,0,0.8)); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shake {
+    0% { transform: rotate(0); }
+    25% { transform: rotate(-6deg); }
+    50% { transform: rotate(6deg); }
+    75% { transform: rotate(-4deg); }
+    100% { transform: rotate(0); }
+}
+
+/* OVERLAY */
+.overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+
+/* POPUP */
+.popup {
+    background: linear-gradient(135deg, #ffffff, #f1f1f1);
+    color: #000;
+    padding: 30px;
+    border-radius: 22px;
+    width: 370px;
+    text-align: center;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+    animation: popupIn 0.6s cubic-bezier(.17,.67,.36,1.3);
+}
+
+@keyframes popupIn {
+    from { transform: scale(0.5) translateY(60px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* BARRA */
+.barra {
+    width: 100%;
+    height: 20px;
+    background: #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.progresso {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(to right, #999, #333, #000);
+}
+
+/* IMAGEM */
+.popup img {
+    width: 100%;
+    border-radius: 14px;
+    margin-top: 15px;
+}
+
+/* BOTÃO */
+button {
+    margin-top: 18px;
+    padding: 10px 20px;
+    border: none;
+    background: #000;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🦶 PEDRÔMETRO</h1>
+
+<!-- PÉ GIGANTE -->
+<div class="pe-botao" id="pe" onclick="iniciarAnalise()">🦶</div>
+
+<!-- POPUP -->
+<div class="overlay" id="overlay">
+    <div class="popup">
+        <h2>Analisando pé...</h2>
+
+        <div class="barra">
+            <div class="progresso" id="progresso"></div>
+        </div>
+
+        <p id="porcentagem">0%</p>
+
+        <div id="resultado" style="display:none;">
+            <h3>Resultado final</h3>
+            <p><strong>O pé é BEM PRETO Van Gogh só amou o amarelo porque não conheceu esse pé preto 🖤😂</strong></p>
+            <img src="/pe.jpg" alt="Pé analisado">
+        </div>
+
+        <button onclick="fecharPopup()">Fechar</button>
+    </div>
+</div>
+
+<script>
+let progresso = 0;
+let contador;
+
+/* CHUVA DE PÉS */
+function spawnPes(qtd = 25) {
+    for (let i = 0; i < qtd; i++) {
+        const pe = document.createElement("div");
+        pe.className = "pe-emoji";
+        pe.innerText = "🦶";
+
+        pe.style.left = Math.random() * 100 + "vw";
+        pe.style.animationDuration = 2 + Math.random() * 2 + "s";
+        pe.style.fontSize = 18 + Math.random() * 26 + "px";
+
+        document.body.appendChild(pe);
+
+        setTimeout(() => pe.remove(), 4000);
+    }
+}
+
+function iniciarAnalise() {
+    spawnPes(30); // 🦶🦶🦶
+
+    const botaoPe = document.getElementById("pe");
+    botaoPe.classList.add("clicado");
+    setTimeout(() => botaoPe.classList.remove("clicado"), 400);
+
+    document.getElementById("overlay").style.display = "flex";
+
+    progresso = 0;
+    document.getElementById("resultado").style.display = "none";
+
+    contador = setInterval(() => {
+        progresso++;
+        document.getElementById("progresso").style.width = progresso + "%";
+        document.getElementById("porcentagem").innerText = progresso + "%";
+
+        if (progresso >= 100) {
+            clearInterval(contador);
+            document.getElementById("resultado").style.display = "block";
+        }
+    }, 30);
+}
+
+function fecharPopup() {
+    document.getElementById("overlay").style.display = "none";
+}
+</script>
+
+</body>
+</html>
+
